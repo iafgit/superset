@@ -28,6 +28,10 @@ x-superset-volumes:
   &superset-volumes # /app/pythonpath_docker will be appended to the PYTHONPATH in the final container
   - ./docker:/app/docker
   - superset_home:/app/superset_home
+  - ./superset-frontend:/app/superset-frontend
+  - superset_home:/app/superset_home
+  - ./tests:/app/tests
+
 
 x-common-build: &common-build
   context: .
@@ -35,12 +39,12 @@ x-common-build: &common-build
   cache_from:
     - apache/superset-cache:3.10-slim-bookworm
 
-version: "4.0"
+version: "3.7"
 services:
   redis:
     image: redis:7
     container_name: superset_cache
-    restart: unless-stopped
+    restart: always
     volumes:
       - redis:/data
 
@@ -52,10 +56,14 @@ services:
         required: false
     image: postgres:15
     container_name: superset_db
-    restart: unless-stopped
+    restart: always
+    ports:
+      - "5432:5432"
     volumes:
       - db_home:/var/lib/postgresql/data
       - ./docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - ./docker/postgres/config/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+      - ./docker/postgres/config/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
 
   superset:
     env_file:
@@ -68,7 +76,7 @@ services:
     container_name: superset_app
     command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
     user: "root"
-    restart: unless-stopped
+    restart: always
     ports:
       - 8088:8088
     depends_on: *superset-depends-on
@@ -100,7 +108,7 @@ services:
         required: true
       - path: docker/.env-local # optional override
         required: false
-    restart: unless-stopped
+    restart: always
     depends_on: *superset-depends-on
     user: "root"
     volumes: *superset-volumes
@@ -121,7 +129,7 @@ services:
         required: true
       - path: docker/.env-local # optional override
         required: false
-    restart: unless-stopped
+    restart: always
     depends_on: *superset-depends-on
     user: "root"
     volumes: *superset-volumes

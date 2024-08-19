@@ -97,12 +97,20 @@ class CeleryConfig:
 
 CELERY_CONFIG = CeleryConfig
 
-FEATURE_FLAGS = {"ALERT_REPORTS": True}
-ALERT_REPORTS_NOTIFICATION_DRY_RUN = True
-WEBDRIVER_BASEURL = "http://superset:8088/"  # When using docker compose baseurl should be http://superset_app:8088/
+FEATURE_FLAGS = {"ALERT_REPORTS": True,"ENABLE_TEMPLATE_PROCESSING":True,"EMBEDDED_SUPERSET": True, "HORIZONTAL_FILTER_BAR": True}
+ALERT_REPORTS_NOTIFICATION_DRY_RUN = False
+WEBDRIVER_BASEURL = "http://localhost:8088/"  # When using docker compose baseurl should be http://superset_app:8088/
 # The base URL for the email report hyperlinks.
 WEBDRIVER_BASEURL_USER_FRIENDLY = WEBDRIVER_BASEURL
 SQLLAB_CTAS_NO_LIMIT = True
+
+SMTP_HOST = "sandbox.smtp.mailtrap.io"
+SMTP_STARTTLS = True
+SMTP_SSL = False
+SMTP_USER = "04ab28a738ac22"
+SMTP_PORT = 2525
+SMTP_PASSWORD = "10ee364fe2553b"
+SMTP_MAIL_FROM = "Private Person <from@example.com>"
 
 #
 # Optionally import superset_config_docker.py (which will have been included on
